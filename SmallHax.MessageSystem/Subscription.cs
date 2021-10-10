@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SmallHax.MessageBus
+namespace SmallHax.MessageSystem
 {
     public class Subscription
     {

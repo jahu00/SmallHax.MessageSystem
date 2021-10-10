@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SmallHax.MessageBus
+namespace SmallHax.MessageSystem
 {
     public class Topic
     {
