@@ -1,5 +1,4 @@
 using FluentAssertions;
-using SmallHax.MessageBus;
 using System;
 using Xunit;
 

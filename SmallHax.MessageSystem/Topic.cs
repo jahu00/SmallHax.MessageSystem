@@ -3,12 +3,17 @@ using System.Collections.Generic;
 
 namespace SmallHax.MessageSystem
 {
-    public class Topic
+    public class Topic : Topic<object>
     {
-        private Dictionary<object, Subscription> Subscriptions { get; set; } = new Dictionary<object, Subscription>();
-        public Subscription Subscribe(object subscriber)
+
+    }
+
+    public class Topic<TMessage> where TMessage : class
+    {
+        private Dictionary<object, Subscription<TMessage>> Subscriptions { get; set; } = new Dictionary<object, Subscription<TMessage>>();
+        public Subscription<TMessage> Subscribe(object subscriber)
         {
-            var subscription = new Subscription();
+            var subscription = new Subscription<TMessage>();
             Subscriptions.Add(subscriber, subscription);
             return subscription;
         }
@@ -18,7 +23,7 @@ namespace SmallHax.MessageSystem
             Subscriptions.Remove(subscriber);
         }
 
-        public Subscription GetSubscription(object subscriber)
+        public Subscription<TMessage> GetSubscription(object subscriber)
         {
             if (Subscriptions.TryGetValue(subscriber, out var subscription))
             {
@@ -27,7 +32,7 @@ namespace SmallHax.MessageSystem
             return null;
         }
 
-        public void PublishMessage(object message)
+        public void PublishMessage(TMessage message)
         {
             foreach(var subscription in Subscriptions.Values)
             {
