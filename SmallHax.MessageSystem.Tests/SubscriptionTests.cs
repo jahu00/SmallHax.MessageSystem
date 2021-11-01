@@ -11,7 +11,7 @@ namespace SmallHax.MessageSystem.Tests
         {
             // Arrange
             var subscription = new Subscription();
-            var message = new Object();
+            var message = new object();
 
             // Act
             subscription.EnqueueMessage(message);
@@ -35,6 +35,50 @@ namespace SmallHax.MessageSystem.Tests
 
             // Assert
             dequeuedMessage.Should().BeNull();
+        }
+
+        [Fact]
+        public void HasMessageTest()
+        {
+            // Arrange
+            var subscription = new Subscription();
+            var message = new object();
+
+            // Act
+            subscription.EnqueueMessage(message);
+            var hasMessage = subscription.HasMessage;
+
+            // Assert
+            hasMessage.Should().BeTrue();
+        }
+
+        [Fact]
+        public void HasMessageNegativeTest()
+        {
+            // Arrange
+            var subscription = new Subscription();
+
+            // Act
+            var hasMessage = subscription.HasMessage;
+
+            // Assert
+            hasMessage.Should().BeFalse();
+        }
+
+        [Fact]
+        public void ClearMessagesTest()
+        {
+            // Arrange
+            var subscription = new Subscription();
+            var message = new object();
+
+            // Act
+            subscription.EnqueueMessage(message);
+            subscription.Clear();
+            var hasMessage = subscription.HasMessage;
+
+            // Assert
+            hasMessage.Should().Be(false);
         }
     }
 }

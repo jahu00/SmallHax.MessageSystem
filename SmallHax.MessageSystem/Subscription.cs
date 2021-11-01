@@ -4,27 +4,34 @@ using System.Text;
 
 namespace SmallHax.MessageSystem
 {
-    public class Subscription : Subscription<object>
+    public class Subscription
     {
-    }
+        private Queue<object> Messages { get; set; } = new Queue<object>();
+        public bool HasMessage => Messages.Count > 0;
 
-    public class Subscription<TMessage> where TMessage : class
-    {
-        private Queue<TMessage> Messages { get; set; } = new Queue<TMessage>();
-
-        public void EnqueueMessage(TMessage message)
+        public void EnqueueMessage(object message)
         {
             Messages.Enqueue(message);
         }
 
-        public TMessage DequeueMessage()
+        public object DequeueMessage()
         {
-            if (Messages.Count == 0)
+            if (!HasMessage)
             {
                 return null;
             }
             var message = Messages.Dequeue();
             return message;
+        }
+
+        public TMessage DequeueMessage<TMessage>()
+        {
+            return (TMessage)DequeueMessage();
+        }
+
+        public void Clear()
+        {
+            Messages.Clear();
         }
     }
 }

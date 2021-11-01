@@ -11,7 +11,7 @@ namespace SmallHax.MessageSystem.Tests
         {
             // Arrange
             var topic = new Topic();
-            var subscriber = new Object();
+            var subscriber = new object();
 
             // Act
             var subscriptionFromSubscribe = topic.Subscribe(subscriber);
@@ -28,11 +28,11 @@ namespace SmallHax.MessageSystem.Tests
         {
             // Arrange
             var topic = new Topic();
-            var subscriber = new Object();
-            var message = new Object();
+            var subscriber = new object();
+            var message = new object();
 
             // Act
-            var subscriptionFromSubscribe = topic.Subscribe(subscriber);
+            var subscriptionFromSubscribe = topic.Subscribe<object>(subscriber);
             topic.Unsubscribe(subscriber);
             var subscriptionFromGetSubscription = topic.GetSubscription(subscriber);
             topic.PublishMessage(message);

@@ -3,39 +3,60 @@ using System.Collections.Generic;
 
 namespace SmallHax.MessageSystem
 {
-    public class Topic : Topic<object>
+    public class Topic
     {
+        private Dictionary<(object subscriber, Type subscriberMessageType), Subscription> Subscriptions { get; set; } = new Dictionary<(object subscriber, Type type), Subscription>();
 
-    }
-
-    public class Topic<TMessage> where TMessage : class
-    {
-        private Dictionary<object, Subscription<TMessage>> Subscriptions { get; set; } = new Dictionary<object, Subscription<TMessage>>();
-        public Subscription<TMessage> Subscribe(object subscriber)
+        public Subscription Subscribe(object subscriber)
         {
-            var subscription = new Subscription<TMessage>();
-            Subscriptions.Add(subscriber, subscription);
+            return Subscribe<object>(subscriber);
+        }
+
+        public Subscription Subscribe<TSubscriptionMessage>(object subscriber) where TSubscriptionMessage : class
+        {
+            var subscriberMessageType = typeof(TSubscriptionMessage);
+            var subscription = new Subscription();
+            Subscriptions.Add((subscriber: subscriber, subscriberMessageType: subscriberMessageType), subscription);
             return subscription;
         }
 
         public void Unsubscribe(object subscriber)
         {
-            Subscriptions.Remove(subscriber);
+            Unsubscribe<object>(subscriber);
         }
 
-        public Subscription<TMessage> GetSubscription(object subscriber)
+        public void Unsubscribe<TSubscriptionMessage>(object subscriber)
         {
-            if (Subscriptions.TryGetValue(subscriber, out var subscription))
+            var subscriberMessageType = typeof(TSubscriptionMessage);
+            Subscriptions.Remove((subscriber: subscriber, subscriberMessageType: subscriberMessageType));
+        }
+
+        public Subscription GetSubscription(object subscriber)
+        {
+            return GetSubscription<object>(subscriber);
+        }
+
+        public Subscription GetSubscription<TSubscriptionMessage>(object subscriber) where TSubscriptionMessage : class
+        {
+            var subscriberMessageType = typeof(TSubscriptionMessage);
+            if (Subscriptions.TryGetValue((subscriber: subscriber, subscriberMessageType: subscriberMessageType), out var subscription))
             {
                 return subscription;
             }
             return null;
         }
 
-        public void PublishMessage(TMessage message)
+        public void PublishMessage(object message)
         {
-            foreach(var subscription in Subscriptions.Values)
+            foreach(var subscriptionPair in Subscriptions)
             {
+                var subscriptionKey = subscriptionPair.Key;
+                var messageType = message.GetType();
+                if (!subscriptionKey.subscriberMessageType.IsAssignableFrom(messageType))
+                {
+                    continue;
+                }
+                var subscription = subscriptionPair.Value;
                 subscription.EnqueueMessage(message);
             }
         }
